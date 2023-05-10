@@ -56,7 +56,6 @@
       {% for image in generated_images %}
 
         <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
-        <button type="button" id="submit-remove" class="btn" value="{{image.id}}">Remove</button>
         <button type="button" id="submit-select" class="btn" value="{{image.id}}">Select</button>
 
       {% endfor %}
@@ -66,11 +65,9 @@
       <h2>Selected Images</h2>
     </div>
     <div class="column">
-      {% for image in generated_images %}
+      {% for image in selected_images %}
       
         <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
-        <button type="button" id="submit-remove" class="btn" value="{{image.id}}">Remove</button>
-        <button type="button" id="submit-select" class="btn" value="{{image.id}}">Select</button>
 
       {% endfor %}
     </div>

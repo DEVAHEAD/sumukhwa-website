@@ -14,8 +14,6 @@
 {% endif %}
 {% for image in images %} 
     <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
-    <div class="remove-button" onclick="removeImage('{{image.id}}' )">Remove</div>
-    <div class="select-button" onclick="selectImage('{{image.id}}')">Select</div>
 {% endfor %}
 <form method="post" action="{% url 'art_generator:imageGenerate' %}">
     {% csrf_token %}

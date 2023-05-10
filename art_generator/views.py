@@ -213,7 +213,7 @@ def image_generate_view(request):
         #지우기와 고르기 
         if request.POST.get('action') == 'toggle_button':
             if request.POST.get('button_type')=='remove':
-                print("!!!!!!!!!!!!REMOVE ACTIVATED")
+                #print("!!!!!!!!!!!!REMOVE ACTIVATED")
                 token = request.POST.get('csrfmiddlewaretoken')
                 id = request.POST.get("id")#image object id 
                 print("id when pressed button:",id)
@@ -223,12 +223,13 @@ def image_generate_view(request):
                 return redirect('../../sumukhwa/deleteImage')
 
             elif request.POST.get('button_type')=='select':
-                print("!!!!!!!!!!!!SUBMIT ACTIVATED")
+                #print("!!!!!!!!!!!!SUBMIT ACTIVATED")
                 token = request.POST.get('csrfmiddlewaretoken')
                 id = request.POST.get("id")#image object id 
                 request.session['image_id']=id
                 GeneratedImage.objects.select_image(id)
-                #selected_images=GeneratedImage.objects.filter(project=project,selected=True)
+                #잘 됌!
+                #print("Is it selected??????????????????????:",GeneratedImage.objects.filter(selected=True).count())
                 return redirect('../../sumukhwa/imageGenerate')
     #where to return
     link='imageGenerate.html'
