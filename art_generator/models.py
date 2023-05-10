@@ -3,13 +3,8 @@
 from django.db import models
 # from datetime
 import datetime
-from django.forms import ModelForm
-from django.core.files import File
 from UserApp.models import *
 import os
-import re
-import uuid
-from .createImage import create_ai_image
 from django.conf import settings
 from django.core.files.base import ContentFile
 
@@ -110,25 +105,6 @@ class GeneratedImageManager(models.Manager):
             image_object.save()
             return image_object
 
-    def create_images(self, negative_prompt, positive_prompt, limit=10):
-
-        project = self.project
-
-        # 1. Get Huggingsface image
-        images, image_paths = create_ai_image(
-            negative_prompt, positive_prompt, project=project, limit=limit)
-
-        # 2. Make instances
-        imageInstances = []
-        for image_path in image_paths:
-            with open(image_path, 'rb') as f:
-                image = File(f)
-                # 3. Save image into GeneratedImage instance
-                imageInstance = self.create(project=project, image=image)
-                imageInstance.save()
-                imageInstances.append(imageInstance)
-
-        return imageInstances
 
     def select_image(self, id):
         imageInstance = GeneratedImage.objects.get(id=id)

@@ -1,9 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <head>
     <title>Last Check</title>
 </head>
+<style>
+    
+    img{
+      max-width: 600px;
+    }
+    div{
+        align-items: center;
+    }
+</style>
 {% if not images %} 
 <a> no selected images</a>
 <form method="post" action="{%url 'art_generator:imageGenerate' %}">
@@ -12,9 +22,11 @@
 
 </form>
 {% endif %}
+<div class="column">
 {% for image in images %} 
     <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
 {% endfor %}
+</div>
 <form method="post" action="{% url 'art_generator:imageGenerate' %}">
     {% csrf_token %}
     <label for="file_path">Save At:</label><br><br>

@@ -1,9 +1,9 @@
 # Create your views here.
 from .models import Project, GeneratedImage
 from django.shortcuts import redirect,  render
-from createImage import generateImage
+from .createImage import generateImage
 from django.http import HttpResponseRedirect,HttpResponse
-from django.urls import reverse
+
 from UserApp.models import *
 import  shutil,os
 from wsgiref.util import FileWrapper
@@ -163,12 +163,12 @@ def image_generate_view(request):
             try:               
                 selected_images = GeneratedImage.objects.filter(project=project, selected=True)
                 #DEBUG
-                generated_images = fakeGenerateImage(project, negative_prompt, positive_prompt,projectType)  # NEED WORK
+                generated_images = fakeGenerateImage(project, negative_prompt, positive_prompt,projectType)  
                 #ACTUAL
-                #generated_images=generateImage(project,negative_prompt,positive_prompt,projectType)
+                #generated_images=generatedImage(project,negative_prompt,positive_prompt,projectType)
             except:
                 #DEBUG
-                generated_images = fakeGenerateImage(project, negative_prompt, positive_prompt)  # NEED WORK 
+                generated_images = fakeGenerateImage(project, negative_prompt, positive_prompt)  
                 #ACTUAL
                 generated_images=[]
          
