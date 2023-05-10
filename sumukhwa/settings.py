@@ -121,7 +121,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')  # 개발자가 관리하는 파일들
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'art_generator/static')
+    os.path.join(BASE_DIR, 'art_generator\\static')
 ]
 
 

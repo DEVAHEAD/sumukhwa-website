@@ -1,4 +1,4 @@
-import os
+import shutil,os
 
 if __name__=='__main__':
     userapp_cache_dir='UserApp\\__pycache__\\'
@@ -31,7 +31,7 @@ if __name__=='__main__':
             if os.path.isfile(os.path.join(media,file)):
                 os.remove(os.path.join(media,file))
             else:
-                os.rmdir(os.path.join(media,file))
+                shutil.rmtree(os.path.join(media,file))
     except:
         print("!!!!!!!!!!!!!!!!!!!!!!something wrong with deleting media")
     try:

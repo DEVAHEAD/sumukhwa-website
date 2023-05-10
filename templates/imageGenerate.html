@@ -53,13 +53,9 @@
       {% for image in generated_images %}
 
         <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
+        <button type="button" id="submit-remove" class="btn" value="{{image.id}}">Remove</button>
+        <button type="button" id="submit-select" class="btn" value="{{image.id}}">Select</button>
 
-        <form method="post" action="{% url 'art_generator:imageGenerate' %}">
-          {% csrf_token %}
-          <input type='submit' value='remove' name='remove'>
-          <input type='submit' value='select' name='select'>
-        </form>
-      {% endfor %}
       {% endfor %}
     </div>
     
@@ -68,14 +64,46 @@
     </div>
     <div class="column">
       {% for image in generated_images %}
+      
         <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
-        <form method="post" action="{% url 'art_generator:imageGenerate' %}">
-          {% csrf_token %}
-          <input type='submit' value='remove' name='remove'>
-          <input type='submit' value='select' name='select'>
-        </form>
+        <button type="button" id="submit-remove" class="btn" value="{{image.id}}">Remove</button>
+        <button type="button" id="submit-select" class="btn" value="{{image.id}}">Select</button>
+
       {% endfor %}
     </div>
   </body>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    var data = new FormData();
+    $(document).on('click', '#submit-remove', function(e) {
+      data.append('action', 'toggle_button')
+      data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+      data.append('id', $(this).val())
+      data.append('button_type','remove')
+      $.ajax({
+          type: 'POST',
+          url: '{% url "art_generator:imageGenerate" %}',
+          data: data,
+          cache: false,
+          processData: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+      })
+    })
+    $(document).on('click', '#submit-select', function(e) {
+      data.append('action', 'toggle_button')
+      data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+      data.append('id', $(this).val())
+      data.append('button_type','select')
+      $.ajax({
+          type: 'POST',
+          url: '{% url "art_generator:imageGenerate" %}',
+          data: data,
+          cache: false,
+          processData: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+      })
+    })
+  </script>
 {% endblock %}
