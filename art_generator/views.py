@@ -1,11 +1,13 @@
 # Create your views here.
 from .models import Project, GeneratedImage
 from django.shortcuts import redirect,  render
-from .models import GeneratedImage
-from django.http import HttpResponseRedirect
+from createImage import generateImage
+from django.http import HttpResponseRedirect,HttpResponse
 from django.urls import reverse
 from UserApp.models import *
 import  shutil,os
+from wsgiref.util import FileWrapper
+from zipfile import ZipFile
 from django.conf import settings
 # OBJECTIVE: projectList 화면에 보낼 프로젝터를 렌더링 하는 뷰 함수
 # NEED WORK: user permission 설정 로직 없음, 템플렛 연결 미완,선택 후 이동 없음
@@ -156,16 +158,19 @@ def image_generate_view(request):
         #generate 버튼을 눌러 이미지를 요구했다면
         if 'generate' in request.POST:
 
-            #NEED WORK: 폴더 정리 로직 없음
             #기존의 선택된 이미지들과 새로 generated 된 이미지를 불러온다.
             #generateImage 함수 안에 이미 저장 로직이 있다. 
             try:               
                 selected_images = GeneratedImage.objects.filter(project=project, selected=True)
+                #DEBUG
                 generated_images = fakeGenerateImage(project, negative_prompt, positive_prompt,projectType)  # NEED WORK
-   
+                #ACTUAL
+                #generated_images=generateImage(project,negative_prompt,positive_prompt,projectType)
             except:
+                #DEBUG
                 generated_images = fakeGenerateImage(project, negative_prompt, positive_prompt)  # NEED WORK 
-            
+                #ACTUAL
+                generated_images=[]
          
         elif 'changeProjectName' in request.POST:
             project.projectName=request.POST.get('project_name')
@@ -190,8 +195,8 @@ def image_generate_view(request):
                 request.session['project_id']=project_id 
             
             else:
-                #NEED WORK: message that there is no images selected
-                print("image_generate_view!!!!!!!!!!!!!!!!!\nNo selected images yet")
+                pass
+                #print("image_generate_view!!!!!!!!!!!!!!!!!\nNo selected images yet")
                 
             return redirect("../../sumukhwa/export")
         
@@ -222,24 +227,37 @@ def image_generate_view(request):
     return render(request,link, context=context)      
 
 def export_view(request):
-    #export 후 selected 폴더 비우기 
-    project_id=request.session['project_id']
-    project=Project.objects.get(id=project_id)
-    selected_images=GeneratedImage.objects.selected_images(project_id)
-    
-    if 'Done' in request.POST:
+    # export 후 selected 폴더 비우기
+    project_id = request.session['project_id']
+    project = Project.objects.get(id=project_id)
+    selected_images = GeneratedImage.objects.selected_images(project_id)
+    if 'Save' in request.POST:
+        print("export saved??????")
+        export_path = os.path.join(request.POST.get(
+            'file_path'), project.projectName)+"\\"
 
-        #NEED WORK:save to user computer
-        for image in selected_images:
-            pass 
+        print(export_path)
+        # NEED WORK:save to user computer
+        with ZipFile(export_path, 'w') as export_zip:
+            for image in selected_images:
+                img_path = image.image.path  # path일 수도 있음
+                export_zip.write(img_path, img_path.split("/")[-1])
 
-        GeneratedImage.objects.filter(project=project,selected=True).delete() 
+        wrapper = FileWrapper(open(export_path, 'rb'))
+        content_type = 'application/zip'
+        content_disposition = 'attachment; filename='+export_path
+
+        response = HttpResponse(wrapper, content_type=content_type)
+        response['Content-Disposition'] = content_disposition
+        return response
+
+    elif 'Done' in request.POST:
+        GeneratedImage.objects.filter(
+            project=project, selected=True).delete()
         return redirect('../../sumukhwa/imageGenerate.html')
-    elif 'Back' in request.POST:
-        return redirect('../../sumukhwa/imageGenerate.html')
-        
-    context={'images':selected_images}
-    return render(request,'export.html',context)
+
+    context = {'images': selected_images}
+    return render(request, 'export.html', context)
 
 def choose_type_view(request):
     project_id=request.session['project_id']

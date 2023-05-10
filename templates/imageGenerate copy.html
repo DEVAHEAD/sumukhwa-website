@@ -32,11 +32,11 @@
   
   <form method="post" action="{% url 'art_generator:imageGenerate' %}">
     {% csrf_token %}
-    <label for="project_name">New Project Name:</label><br><br>
+    <label for="project_name">New Project Name:</label>
     <input type="text" id="project_name" name="project_name"><br><br>
-    <label for="negative_prompt">New Negative Prompt:</label><br><br>
+    <label for="negative_prompt">New Negative Prompt:</label>
     <input type="text" id="negative_prompt" name="negative_prompt"><br><br>
-    <label for="positive_prompt">New Positive Prompt:</label><br><br>
+    <label for="positive_prompt">New Positive Prompt:</label>
     <input type="text" id="positive_prompt" name="positive_prompt"><br><br>
     <input type="submit" value="Change Project Name" name="changeProjectName">
     <input type="submit" value="Change Prompt" name="changePrompt"><br><br>

@@ -8,7 +8,7 @@
 <a> no selected images</a>
 <form method="post" action="{%url 'art_generator:imageGenerate' %}">
     {% csrf_token %} 
-    <input type="submit" value="Back" name="Go Back">
+    <input type="submit" value="Go Back" name="Done">
 
 </form>
 {% endif %}
@@ -19,7 +19,7 @@
     {% csrf_token %}
     <label for="file_path">Save At:</label><br><br>
     <input type="text" id="file_path" name="file_path"><br><br>
-    <input type="submit" value="Done" name="Finish Export">
+    <input type="submit" value="Finish Export" name="Save">
 </form>
 
 {% endblock %}

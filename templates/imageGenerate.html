@@ -66,9 +66,7 @@
     </div>
     <div class="column">
       {% for image in selected_images %}
-      
         <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
-
       {% endfor %}
     </div>
   </body>

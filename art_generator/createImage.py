@@ -1,46 +1,40 @@
 import torch
-from diffusers import StableDiffusionPipeline
-import os
+# from diffusers import StableDiffusionPipeline
+import os,shutil 
+import re
+from django.conf import settings
+#give GeneratedImages object
+#when new generate, give fresh 8 images
+#fakeGenerateImage(project, negative_prompt, positive_prompt,projectType)
+def generateImage(project_object, np, pp,type="1"):
 
-#OBJECTIVE: 인공지능 함수를 통해 이미지를 만드는 함수  
-#NEED WORK: image generation 아직 안 함
-def create_ai_image(np,pp,project=None,limit=10):
+    command = "python ai/codes/main_exe.py "+np+ " "+pp+" "+type+" "+str(project_object.id)
+    os.system(command)
 
-    if not project:
-        class Project:
-            projectName="test_default"
-        project=Project()
-
-
-    # make sure you're logged in with `huggingface-cli login`
-    pipe = StableDiffusionPipeline.from_pretrained("CompVis/stable-diffusion-v1-4", revision="fp16", torch_dtype=torch.float16)
-    pipe = pipe.to("cuda")
-
-    #use np, pp to create the image
-    #1 negative prompt가 적용되는지 확인인
-    if np!="" and pp!="":
-        images=pipe(pp,negative_prompt=np,num_images_per_prompt=limit).images
-    else:
-        pp="a photograph of an astronaut riding a horse"
-        np="not a red horse"
-        images=pipe(pp,negative_prompt=np,num_images_per_prompt=limit).images
-    
-    #auto generate filename 
-    image_paths=[]
-    for i,image in enumerate(images):  
-
-        orig_image_path=os.path.join("art_generator\\media\\generatedImages\\",project.projectName+"_"+str(i)+".png")
-        '''
-        #장고에서 사진 업로드 할 때 쓰는 거라는데... 꼭 이거 써야하는지 모르겟음
-        fs = FileSystemStorage()
-        filename = fs.save(image_path, image)
-        image_path = fs.url(filename)
-        image_paths.append(image_path)
-        '''
+    images=[]
+    global saved_once
+    if saved_once==False:
+        #DONE:media에 유저마다 폴더 있어야함
+        #DONE:유저마다 project 만들 시에 generated 폴더 있어야함
+        path='..\\ai\\results\\'
         
-        image.save(orig_image_path) 
-        image_paths.append(orig_image_path)
-    return images,image_paths
+        #copy destination
+        dest_path=os.path.join(settings.MEDIA_ROOT,str(project_object.user.id))
+        dest_path=os.path.join(dest_path,str(project_object.id))
+        dest_path=os.path.join(dest_path,'generated')
 
-if __name__=="__main__":
-    create_ai_image("","")
+        #dest path is made well
+        #print('!!!!!!!!!!!!!!!!!!!destpath:',dest_path)
+        for file in os.listdir(path):
+            #NEED WORK: latest 8개에 대해서만 실행하기 
+
+            #옮기기
+            shutil.copy(os.path.join(path,file), os.path.join(dest_path,file))
+
+            #인스턴스 생성
+            image_object=GeneratedImage.objects.create_image(os.path.join(dest_path,file),project_object)
+            images.append(image_object)
+        #saved_once=True
+    
+    #print("!!!!!!!!!!!!!!!!test",images[0].image.url)
+    return images

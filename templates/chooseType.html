@@ -6,17 +6,14 @@
   <form method="post" style="display: inline;">
   {% csrf_token %}
     <div>
-      <img src="{% static 'human.jpg' %}" alt="Human">
-      <button type="submit" name="1" value="" >왹묘</button>
+      <button type="submit" name="1" value="" >백묘법</button>
 
     </div>
     <div>
-      <img src="{% static 'landscape.jpg' %}" alt="Landscape" >
-      <button type="submit" name="2" value="">백묘</button>
+      <button type="submit" name="2" value="">구륵법</button>
     </div>
     <div>
-      <img src="{% static 'object.jpg' %}" alt="Object">
-      <button type="submit" name="3" value="">흑묘</button>
+      <button type="submit" name="3" value="">몰골법</button>
     </div>
   </form>
 {% endblock %}
