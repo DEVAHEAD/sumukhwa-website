@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<head>
+    <title>Last Check</title>
+</head>
+{% if not images %} 
+<a> no selected images</a>
+<form method="post" action="{%url 'art_generator:imageGenerate' %}">
+    {% csrf_token %} 
+    <input type="submit" value="Back" name="Go Back">
+
+</form>
+{% endif %}
+{% for image in images %} 
+    <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
+    <div class="remove-button" onclick="removeImage('{{image.id}}' )">Remove</div>
+    <div class="select-button" onclick="selectImage('{{image.id}}')">Select</div>
+{% endfor %}
+<form method="post" action="{% url 'art_generator:imageGenerate' %}">
+    {% csrf_token %}
+    <label for="file_path">Save At:</label><br><br>
+    <input type="text" id="file_path" name="file_path"><br><br>
+    <input type="submit" value="Done" name="Finish Export">
+</form>
+
+{% endblock %}

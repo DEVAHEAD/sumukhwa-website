@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Image Generator</h2>
+  <style>
+    .column {
+      display: inline-block;
+      width: 45%;
+      vertical-align: top;
+      padding: 10px;
+      margin: 10px;
+      border: 1px solid #ccc;
+      overflow-y: scroll;
+      max-height: 400px;
+    }
+    .column-title{
+      display: inline-block;
+      width:45%;
+      vertical-align: top;
+      padding: 10px;
+      margin: 10px;
+      max-height: 30px;
+
+    }
+    
+  </style>
+
+  <label for="project_name"><h2>Project Name:</h2>{{project.projectName}}</label><br><br>
+  <label for="negative_prompt"><h3>Negative Prompt:</h3>{{project.negativePrompt}}</label><br><br>
+  <label for="positive_prompt"><h3>Positive Prompt:</h3>{{project.positivePrompt}}</label><br><br>
+
+  
+  <form method="post" action="{% url 'art_generator:imageGenerate' %}">
+    {% csrf_token %}
+    <label for="project_name">New Project Name:</label><br><br>
+    <input type="text" id="project_name" name="project_name"><br><br>
+    <label for="negative_prompt">New Negative Prompt:</label><br><br>
+    <input type="text" id="negative_prompt" name="negative_prompt"><br><br>
+    <label for="positive_prompt">New Positive Prompt:</label><br><br>
+    <input type="text" id="positive_prompt" name="positive_prompt"><br><br>
+    <input type="submit" value="Change Project Name" name="changeProjectName">
+    <input type="submit" value="Change Prompt" name="changePrompt"><br><br>
+    <input type="submit" value="Generate" name="generate">
+    <input type="submit" value="Export" name="export">
+  </form>
+
+  <body>
+    <div class="column-title">
+      <h2>Generated Images</h2>
+    </div>
+    <div class="column">
+      
+      {% for image in generated_images %}
+
+        <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
+
+        <button type="button" id="submit-remove" class="btn" value="{{image.id}}">Remove</button>
+        
+        <button type="button" id="submit-select" class="btn" value="{{image.id}}">Select</button>
+
+      {% endfor %}
+    </div>
+    
+    <div class="column-title">
+      <h2>Selected Images</h2>
+    </div>
+    <div class="column">
+      {% for image in generated_images %}
+        <img id="image-{{ image.id }}" class="draggable" src="{{ image.image.url }}" draggable="true">
+        <form method="post" action="{% url 'art_generator:imageGenerate' %}">
+          {% csrf_token %}
+          <input type='submit' value='remove' name='remove'>
+          <input type='submit' value='select' name='select'>
+        </form>
+      {% endfor %}
+    </div>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    var data = new FormData();
+    $(document).on('click', '#submit-remove', function(e) {
+      data.append('action', 'toggle_button')
+      data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+      data.append('id', $(this).val())
+      data.append('button_type','remove')
+      $.ajax({
+          type: 'POST',
+          url: '{% url "art_generator:imageGenerate" %}',
+          data: data,
+          cache: false,
+          processData: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+      })
+    })
+    $(document).on('click', '#submit-select', function(e) {
+      data.append('action', 'toggle_button')
+      data.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+      data.append('id', $(this).val())
+      data.append('button_type','select')
+      $.ajax({
+          type: 'POST',
+          url: '{% url "art_generator:imageGenerate" %}',
+          data: data,
+          cache: false,
+          processData: false,
+          contentType: false,
+          enctype: 'multipart/form-data',
+      })
+    })
+  </script>
+{% endblock %}
