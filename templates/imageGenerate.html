@@ -3,6 +3,9 @@
 {% block content %}
   <h2>Image Generator</h2>
   <style>
+    img{
+      max-width: 100px;
+    }
     .column {
       display: inline-block;
       width: 45%;
@@ -82,7 +85,7 @@
       data.append('button_type','remove')
       $.ajax({
           type: 'POST',
-          url: '{% url "art_generator:imageGenerate" %}',
+          url: '{% url "art_generator:deleteImage" %}',
           data: data,
           cache: false,
           processData: false,

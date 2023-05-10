@@ -9,7 +9,8 @@
     </form>
     {% if projects %}
       {% for project in projects %}
-        <li>{{ project.projectName }} <form method="post" style="display: inline;">
+        <li>{{ project.projectName }} 
+          <form method="post" style="display: inline;">
           {% csrf_token %}
           <button type="submit" name="use" value="{{ project.id }}">Use</button>
           <button type="submit" name="edit" value="{{ project.id }}">Edit</button>

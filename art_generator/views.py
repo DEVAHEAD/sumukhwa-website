@@ -95,7 +95,7 @@ def fakeGenerateImage(project_object, np, pp,type=1):
             images.append(image_object)
         #saved_once=True
     
-    print("!!!!!!!!!!!!!!!!test",images[0].image.url)
+    #print("!!!!!!!!!!!!!!!!test",images[0].image.url)
     return images
 
 
@@ -122,16 +122,27 @@ def image_generate_view(request):
 
         return True
     
+    try:
+        #웹사이트로부터 정보를 받고
+        project_name=request.POST.get('project_name')
+        if project.projectName!=project_name and prompt_exist(project_name):
+            project.changeName(project_name)
+            project.save()
+    except:
+        print('image_generate_view/project name was not received')
+    
+    #이미 만들어진 이미지가 있었다면 불러오기
+    selected_images=[]
+    try:
+        GeneratedImage.objects.get(project=project)
+        generated_images=GeneratedImage.objects.filter(project=project)
+    except:
+        generated_images=[]
+
+    
     if request.method=="POST":
         # get project info
-        try:
-            #웹사이트로부터 정보를 받고
-            project_name=request.POST.get('project_name')
-            if project.projectName!=project_name and prompt_exist(project_name):
-                project.changeName(project_name)
-                project.save()
-        except:
-            print('image_generate_view/project name was not received')
+
         try:
             negative_prompt = request.POST.get('negative_prompt')
             positive_prompt = request.POST.get('positive_prompt')
@@ -152,13 +163,7 @@ def image_generate_view(request):
             project.positivePrompt="is a cute cat"
 
 
-        #이미 만들어진 이미지가 있었다면 불러오기
-        selected_images=[]
-        try:
-            GeneratedImage.objects.get(project=project)
-            generated_images=GeneratedImage.objects.filter(project=project)
-        except:
-            generated_images=[]
+
         
         # NEED WORK: 만약 prompt가 존재한다면 clause 없음
         
@@ -211,10 +216,11 @@ def image_generate_view(request):
                 print("!!!!!!!!!!!!REMOVE ACTIVATED")
                 token = request.POST.get('csrfmiddlewaretoken')
                 id = request.POST.get("id")#image object id 
+                print("id when pressed button:",id)
                 request.session['image_id']=id
                 #generated_images=GeneratedImage.objects.filter(project=project)
                 #selected_images=GeneratedImage.objects.filter(project=project,selected=True)
-                return redirect('art_generator:deleteImage')
+                return redirect('../../sumukhwa/deleteImage')
 
             elif request.POST.get('button_type')=='select':
                 print("!!!!!!!!!!!!SUBMIT ACTIVATED")
@@ -223,7 +229,7 @@ def image_generate_view(request):
                 request.session['image_id']=id
                 GeneratedImage.objects.select_image(id)
                 #selected_images=GeneratedImage.objects.filter(project=project,selected=True)
-                return redirect('art_generator:imageGenerate')
+                return redirect('../../sumukhwa/imageGenerate')
     #where to return
     link='imageGenerate.html'
     context={'project':project,'generated_images': generated_images, 'selected_images': selected_images}
@@ -271,6 +277,7 @@ def delete_image_view(request):
     project_id=request.session['project_id']
     project=Project.objects.get(id=project_id)
     image_id=request.session['image_id']
+    print("got image id::::",image_id)
     image=GeneratedImage.objects.get(id=image_id,project=project)
     if request.method == 'POST':
         if 'delete' in request.POST:
