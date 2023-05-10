@@ -1,14 +1,10 @@
 # Create your views here.
 from .models import Project, GeneratedImage
-from django.views import View
-from django.shortcuts import redirect, get_object_or_404, render
-from django.http import JsonResponse
-from django.contrib import messages
+from django.shortcuts import redirect,  render
 from .models import GeneratedImage
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from UserApp.models import *
-from rest_framework.response import Response
 import  shutil,os
 from django.conf import settings
 # OBJECTIVE: projectList 화면에 보낼 프로젝터를 렌더링 하는 뷰 함수
@@ -34,8 +30,6 @@ def project_list_view(request):
     
     if request.method == "POST":
 
-
-        # NEED WORK: reference user uploaded image
         if 'use' in request.POST:
             #선택된 프로젝트 pk를 받아오기 
             project_id = request.POST.get("use")
@@ -44,16 +38,7 @@ def project_list_view(request):
             # imageGenerate 페이지로 가기 
             return HttpResponseRedirect('../../sumukhwa/imageGenerate')
             
-        #NEED WORK: 더 이상 스타일 이미지를 자기가 고르지 않으므로 deprecated
-        #NEED WORK: 그렇지만 주로 풍경 수묵화에서 비롯한 style transfer를 원하는지 등등이 바뀔 수 있음
-        elif 'edit' in request.POST:
-            # 선택된 프로젝트 pk를 받아오기 
-            project_id = request.POST.get("edit")
-            request.session['project_id']=project_id 
 
-            # chooseType로 돌아가기 
-            return HttpResponseRedirect(reverse('../../sumukhwa/chooseType', args=[project_id]))
-        
         elif 'new_project' in request.POST:
             project = Project.objects.create_project(user)
             project_id=project.pk
@@ -67,7 +52,7 @@ def project_list_view(request):
 
 
 # OBJECTIVE: generate 버튼 클릭 시 이미지 생성
-# NEED WORK: collect such images
+# Done: collect such images
 def generateImage(project_object, np, pp):
     images = GeneratedImage.objects.create_images(project_object, np, pp)
     return images
@@ -77,7 +62,7 @@ def fakeGenerateImage(project_object, np, pp,type=1):
     images=[]
     global saved_once
     if saved_once==False:
-        #NEED WORK:media에 유저마다 폴더 있어야함
+        #DONE:media에 유저마다 폴더 있어야함
         #DONE:유저마다 project 만들 시에 generated 폴더 있어야함
         path='F:\\1DEVAHEAD\\1DEV\\sumukhwa-server\\fake_photos'
         dest_path=os.path.join(settings.MEDIA_ROOT,str(project_object.user.id))
