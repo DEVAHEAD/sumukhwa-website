@@ -3,6 +3,7 @@ import torch
 import os,shutil 
 import re
 from django.conf import settings
+from .models import GeneratedImage
 #give GeneratedImages object
 #when new generate, give fresh 8 images
 #fakeGenerateImage(project, negative_prompt, positive_prompt,projectType)
